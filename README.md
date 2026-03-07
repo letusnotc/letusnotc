@@ -1,5 +1,5 @@
 <h1 align="center">
-<img src="https://readme-typing-svg.herokuapp.com?font=Righteous&size=35&center=true&vCenter=true&width=650&height=70&duration=4000&lines=Hi+👋+I'm+Arnav+Pandey;AI+%26+Machine+Learning+Engineer;Computer+Vision+%7C+GenAI+%7C+Kaggle+Competitor;Building+Intelligent+Systems+🚀" />
+<img src="https://readme-typing-svg.herokuapp.com?font=Righteous&size=35&center=true&vCenter=true&width=650&height=70&duration=4000&lines=Hi+👋+I'm+Arnav+Pandey;AI+%26+Machine+Learning+Engineer;Building+Intelligent+Systems+🚀" />
 </h1>
 
 <h3 align="center">B.Tech Data Science & AI @ IIIT Naya Raipur | AI/ML Developer | Hackathon Winner</h3>
@@ -24,16 +24,16 @@
 <img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" height="30" width="40"/>
 </a>
 
-<a href="mailto:arnav21pandey07@gmail.com">
-<img align="center" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/gmail.svg" height="30" width="40"/>
+<a href="mailto:arnav21pandey07@gmail.com" target="blank">
+<img align="center" src="https://www.vectorlogo.zone/logos/gmail/gmail-icon.svg" alt="arnav21pandey07" height="30" width="40" />
 </a>
 
-<a href="https://github.com/letusnotc">
-<img align="center" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/github.svg" height="30" width="40"/>
+<a href="https://github.com/letusnotc" target="_blank">
+<img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/github.svg" alt="letusnotc" height="30" width="40" />
 </a>
 
-<a href="https://www.kaggle.com/arnavsuiiiiiiiiiiii">
-<img align="center" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/kaggle.svg" height="30" width="40"/>
+<a href="https://www.kaggle.com/arnavsuiiiiiiiiiiii" target="_blank">
+<img align="center" src="https://www.vectorlogo.zone/logos/kaggle/kaggle-icon.svg" alt="arnavsuiiiiiiiiiiii" height="30" width="30" />
 </a>
 
 </p>
