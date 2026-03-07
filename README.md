@@ -9,9 +9,9 @@
 ## 🚀 About Me
 
 - 🎓 B.Tech **Data Science & Artificial Intelligence** student at **IIIT Naya Raipur**
-- 📊 **Kaggle Competitor** with multiple leaderboard rankings
+- 📊 **Kaggle Code Expert** with multiple leaderboard rankings
 - 🧠 Passionate about **Machine Learning, Computer Vision, and Generative AI**
-- 🏆 **National Hackathon Winner**
+- 🏆 **National Hackathons Winner**
 - ⚡ Building intelligent systems combining **AI + real-world applications**
 
 ---
