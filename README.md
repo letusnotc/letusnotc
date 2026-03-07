@@ -8,7 +8,6 @@
 
 <div align="center">
 
-# 👨‍💻 Arnav Pandey
 ### AI Enthusiast | Competitive Programmer | B.Tech Data Science & AI @ IIIT Naya Raipur | AI/ML Developer | Hackathon Winner
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/arnav-pandey-96334728a)
