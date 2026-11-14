@@ -232,12 +232,19 @@ def repo_meta():
 # ---- cards --------------------------------------------------------------------------------
 def hero():
     h = 400
-    art = open(PORTRAIT, encoding="utf-8").read().splitlines()  # from scripts/make_ascii.py
-    cols, lh, top = max(map(len, art)), 340 / len(art), 30
+    art = [l.rstrip() for l in open(PORTRAIT, encoding="utf-8").read().splitlines()]
+    while art and not art[-1]:
+        art.pop()
+    indent = min(len(l) - len(l.lstrip()) for l in art if l)
+    art = [l[indent:] for l in art]
+    # a character cell is about twice as tall as wide, so this keeps the art's proportions in a 350px-wide box
+    cols, width = max(map(len, art)), 350
+    lh = min(2 * width / cols, 340 / len(art))
+    top = (400 - lh * len(art)) / 2
     # rows "print" top to bottom like a slow terminal; padding every row keeps textLength from stretching short ones
-    rows = "".join(f'<text class="in" style="animation-delay:{0.25 + i * 0.03:.2f}s;animation-duration:.35s" xml:space="preserve" '
-                   f'x="500" y="{top + (i + 1) * lh:.1f}" textLength="340" lengthAdjust="spacing" font-family="{MONO}" '
-                   f'font-size="7.4" fill="{INK}">{escape(line.ljust(cols))}</text>' for i, line in enumerate(art))
+    rows = "".join(f'<text class="in" style="animation-delay:{0.25 + i * 1.8 / len(art):.2f}s;animation-duration:.35s" xml:space="preserve" '
+                   f'x="{870 - width}" y="{top + (i + 1) * lh:.1f}" textLength="{width}" lengthAdjust="spacing" font-family="{MONO}" '
+                   f'font-size="{lh:.2f}" fill="{INK}">{escape(line.ljust(cols))}</text>' for i, line in enumerate(art))
     body = f"""
 <defs><linearGradient id="shine" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="600" y2="0">
   <stop offset="0" stop-color="{INK}"/><stop offset=".42" stop-color="{INK}"/><stop offset=".5" stop-color="#005A9C"/>
