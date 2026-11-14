@@ -64,14 +64,13 @@ WINS = [
 ]
 
 # ---- look ---------------------------------------------------------------------------------
-# All cards form one top-to-bottom gradient, one slice per row. Olive sits at .53 rather than
-# evenly spaced so the darker rows can still hold 4.5:1 text in black (repos) or white (wins).
-STOPS = [(0, "#F4BE38"), (.25, "#EDDA5E"), (.53, "#71951E"), (1, "#587529")]
+# All cards form one light-to-dark gradient, one slice per row. Stops sit at .34/.68 so the
+# switch from black to white text lands on a row boundary and every row keeps 4.5:1.
+STOPS = [(0, "#A0E0EF"), (.34, "#60C1E5"), (.68, "#005A9C"), (1, "#1B365D")]
 ROWS = ["hero", "heatmap", "activity", "tiles", "stack", "repos", "wins"]
-BLACK_TEXT = {"wins"}  # chosen look: black on dark green is ~4:1, so these rows are held to 3:1 instead of 4.5:1
 PAPER = "url(#bg)"
 INK = INK_SOFT = MUTED = RULE = BG_DEFS = ""  # set per row by paint()
-TERM_CMD, TERM_OUT = "#EDDA5E", "#f6f1dc"  # terminal text on its dark panel
+TERM_CMD, TERM_OUT = "#A0E0EF", "#f2f8fb"  # terminal text on its dark panel
 RAMP = [.1, .3, .5, .68, .84, 1]  # heatmap: opacity of the text colour per activity level
 W, GAP = 880, 12
 THIRD = W / 3 - 8  # three cards plus two 12px gaps fill the column
@@ -150,7 +149,7 @@ def paint(row):
     i = ROWS.index(row)
     samples = [grad((i + k / 10) / len(ROWS)) for k in range(11)]
     worst = lambda c: min(contrast(c, s) for s in samples)
-    ink, need = ("#000000", 3.0) if row in BLACK_TEXT else (max(("#000000", "#ffffff"), key=worst), 4.5)
+    ink, need = max(("#000000", "#ffffff"), key=worst), 4.5
     mid = samples[5]
 
     def soft(t):  # ink faded toward the background, only as far as the contrast floor allows
@@ -257,7 +256,7 @@ def hero():
     cursor_y = y - 24 + 6
     body = f"""
 <defs><linearGradient id="shine" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="600" y2="0">
-  <stop offset="0" stop-color="{INK}"/><stop offset=".42" stop-color="{INK}"/><stop offset=".5" stop-color="#ffffff"/>
+  <stop offset="0" stop-color="{INK}"/><stop offset=".42" stop-color="{INK}"/><stop offset=".5" stop-color="#005A9C"/>
   <stop offset=".58" stop-color="{INK}"/><stop offset="1" stop-color="{INK}"/>
   {"" if STATIC else '<animateTransform attributeName="gradientTransform" type="translate" values="-600 0;600 0;600 0" keyTimes="0;.45;1" dur="7s" begin="1.6s" repeatCount="indefinite"/>'}
 </linearGradient></defs>
@@ -335,7 +334,7 @@ def heatmap(data):
     h = gy + 7 * step + 44
     body = f"""
 <rect width="{W}" height="{h}" rx="14" fill="{PAPER}"/>
-<text class="up" {at(0.8)} x="42" y="62" font-family="{SERIF}" font-size="34" fill="{INK}">Every day, <tspan font-style="italic">in green</tspan></text>
+<text class="up" {at(0.8)} x="42" y="62" font-family="{SERIF}" font-size="34" fill="{INK}">Every day, <tspan font-style="italic">in blue</tspan></text>
 <text class="in" {at(0.8)} x="{right}" y="60" text-anchor="end" font-family="{MONO}" font-size="12" letter-spacing="1" fill="{MUTED}">REFRESHED DAILY</text>
 {''.join(cells)}
 <g class="in" {at(2.4)}>{labels}
@@ -449,7 +448,7 @@ def selftest():
     s = summarise(days)
     assert (s["total"], s["current"], s["longest"], s["active"]) == (13, 2, 2, 2), s
     assert summarise(days + [{"date": "2025-01-04", "count": 0}])["current"] == 2  # today empty keeps streak
-    assert grad(0) == "#f4be38" and grad(1) == "#587529" and round(contrast("#000000", "#ffffff"), 1) == 21.0
+    assert grad(0) == "#a0e0ef" and grad(1) == "#1b365d" and round(contrast("#000000", "#ffffff"), 1) == 21.0
 
 
 if __name__ == "__main__":
