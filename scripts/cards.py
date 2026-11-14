@@ -15,6 +15,7 @@ import urllib.request
 from html import escape, unescape
 
 USER = "letusnotc"
+SITE = "arnav-pandey.vercel.app"
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 OUT, FONTS, DATA = (os.path.join(ROOT, p) for p in ("cards", "fonts", "data/contributions.json"))
 STATIC = bool(os.environ.get("STATIC"))
@@ -223,8 +224,8 @@ def hero():
 <text class="up" {at(0.3)} x="44" y="278" font-family="{SERIF}" font-style="italic" font-size="112" letter-spacing="-2.5" fill="url(#shine)">{LAST}</text>
 <g class="up" {at(0.55)}>{lines_svg(48, 318, TAGLINE, 27, f'font-family="{SANS}" font-size="18" fill="{INK_SOFT}"')}</g>
 <g class="in" {at(0.8)}>
-  <text x="48" y="376" font-family="{MONO}" font-size="13" fill="{INK}">github.com/{USER}</text>
-  <text x="{48 + 7.8 * len('github.com/' + USER) + 8:.0f}" y="376" font-family="{MONO}" font-size="13" fill="{COLOR['forest']}">&#8599;</text>
+  <text x="48" y="376" font-family="{MONO}" font-size="13" fill="{INK}">{SITE}</text>
+  <text x="{48 + 7.8 * len(SITE) + 8:.0f}" y="376" font-family="{MONO}" font-size="13" fill="{COLOR['forest']}">&#8599;</text>
 </g>
 <rect class="in" {at(0.7)} x="516" y="60" width="330" height="{cursor_y - 60 + 30}" rx="10" fill="#ffffff" stroke="{RULE}"/>
 {''.join(rows)}

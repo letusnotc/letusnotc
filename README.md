@@ -2,7 +2,7 @@
      .github/workflows/update-cards.yml. Keep this block free of blank lines, and keep each row
      of three cards on one line with no spaces between them: the spacing is baked into the SVGs. -->
 <div align="center">
-<a href="https://github.com/letusnotc"><img src="./cards/hero.svg" width="100%" alt="Arnav Pandey. AI and ML engineer at IIIT Naya Raipur. I build AI systems that solve real problems, from health monitoring to voice payments." /></a><br>
+<a href="https://arnav-pandey.vercel.app/"><img src="./cards/hero.svg" width="100%" alt="Arnav Pandey. AI and ML engineer at IIIT Naya Raipur. I build AI systems that solve real problems, from health monitoring to voice payments." /></a><br>
 <img src="./git_bn.gif" width="100%" alt="Banner animation" /><br>
 <img src="./cards/heatmap.svg" width="100%" alt="Arnav's contribution graph, in green, refreshed daily" /><br>
 <img src="./cards/activity.svg" width="100%" alt="Contributions in the last 12 months, by month, with streak and busiest day" /><br>
@@ -14,6 +14,6 @@
 </div>
 
 <p align="center">
-<a href="https://linkedin.com/in/arnav-pandey-96334728a">linkedin</a> &nbsp;/&nbsp; <a href="mailto:arnav21pandey07@gmail.com">gmail</a> &nbsp;/&nbsp; <a href="https://www.kaggle.com/arnavsuiiiiiiiiiiii">kaggle</a> &nbsp;/&nbsp; <a href="https://github.com/letusnotc?tab=repositories">all repos</a>
+<a href="https://arnav-pandey.vercel.app/">arnav-pandey.vercel.app</a> &nbsp;/&nbsp; <a href="https://linkedin.com/in/arnav-pandey-96334728a">linkedin</a> &nbsp;/&nbsp; <a href="mailto:arnav21pandey07@gmail.com">gmail</a> &nbsp;/&nbsp; <a href="https://www.kaggle.com/arnavsuiiiiiiiiiiii">kaggle</a> &nbsp;/&nbsp; <a href="https://github.com/letusnotc?tab=repositories">all repos</a>
 </p>
 <p align="center"><i>If you like my work, consider starring my repositories ⭐</i></p>
