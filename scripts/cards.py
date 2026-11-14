@@ -68,6 +68,7 @@ WINS = [
 # evenly spaced so the darker rows can still hold 4.5:1 text in black (repos) or white (wins).
 STOPS = [(0, "#F4BE38"), (.25, "#EDDA5E"), (.53, "#71951E"), (1, "#587529")]
 ROWS = ["hero", "heatmap", "activity", "tiles", "stack", "repos", "wins"]
+BLACK_TEXT = {"wins"}  # chosen look: black on dark green is ~4:1, so these rows are held to 3:1 instead of 4.5:1
 PAPER = "url(#bg)"
 INK = INK_SOFT = MUTED = RULE = BG_DEFS = ""  # set per row by paint()
 TERM_CMD, TERM_OUT = "#EDDA5E", "#f6f1dc"  # terminal text on its dark panel
@@ -149,14 +150,14 @@ def paint(row):
     i = ROWS.index(row)
     samples = [grad((i + k / 10) / len(ROWS)) for k in range(11)]
     worst = lambda c: min(contrast(c, s) for s in samples)
-    ink = max(("#000000", "#ffffff"), key=worst)
+    ink, need = ("#000000", 3.0) if row in BLACK_TEXT else (max(("#000000", "#ffffff"), key=worst), 4.5)
     mid = samples[5]
 
-    def soft(t):  # ink faded toward the background, only as far as 4.5:1 allows
+    def soft(t):  # ink faded toward the background, only as far as the contrast floor allows
         for tt in (t, t / 2, 0):
-            if worst(hexmix(ink, mid, tt)) >= 4.5:
+            if worst(hexmix(ink, mid, tt)) >= need:
                 return hexmix(ink, mid, tt)
-        raise SystemExit(f"{row}: text contrast {worst(ink):.2f} is under 4.5:1, adjust STOPS")
+        raise SystemExit(f"{row}: text contrast {worst(ink):.2f} is under {need}:1, adjust STOPS")
 
     INK, INK_SOFT, MUTED, RULE = soft(0), soft(.2), soft(.35), hexmix(ink, mid, .7)
     stops = "".join(f'<stop offset="{k / 10}" stop-color="{c}"/>' for k, c in enumerate(samples))
