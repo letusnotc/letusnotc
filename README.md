@@ -4,7 +4,7 @@
 <div align="center">
 <a href="https://github.com/letusnotc"><img src="./cards/hero.svg" width="100%" alt="Arnav Pandey. AI and ML engineer at IIIT Naya Raipur. I build AI systems that solve real problems, from health monitoring to voice payments." /></a><br>
 <img src="./git_bn.gif" width="100%" alt="Banner animation" /><br>
-<img src="./cards/heatmap.svg" width="100%" alt="Arnav's contribution graph, in blue, refreshed daily" /><br>
+<img src="./cards/heatmap.svg" width="100%" alt="Arnav's contribution graph, in green, refreshed daily" /><br>
 <img src="./cards/activity.svg" width="100%" alt="Contributions in the last 12 months, by month, with streak and busiest day" /><br>
 <img src="./cards/build.svg" width="33.333%" alt="BUILD: 3 AI products" /><img src="./cards/win.svg" width="33.333%" alt="HACKATHONS: 4 podiums" /><a href="https://www.kaggle.com/arnavsuiiiiiiiiiiii"><img src="./cards/rank.svg" width="33.333%" alt="KAGGLE: rank 9 of 4000+" /></a><br>
 <img src="./cards/stack.svg" width="100%" alt="Tech stack: Python, C++, MySQL; scikit-learn, XGBoost, PyTorch, TensorFlow; OpenCV, MediaPipe; HuggingFace, LangChain, Gemini; Flask, FastAPI, Docker" /><br>

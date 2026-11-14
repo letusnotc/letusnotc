@@ -14,7 +14,7 @@
 @media (prefers-reduced-motion:reduce){.up,.in,.bar,.dot,.blink,.drop{animation:none!important;opacity:1!important;transform:none!important}}</style><g transform="translate(8.000 0)">
 <rect width="285.3333333333333" height="176" rx="14" fill="#f3f3f1"/>
 <g class="up" style="animation-delay:0.74s">
-  <rect x="24" y="30" width="8" height="8" rx="2" fill="#ffc81a"/>
+  <rect x="24" y="30" width="8" height="8" rx="2" fill="#F4BE38"/>
   <text x="40" y="39" font-family="Geist, system-ui, -apple-system, sans-serif" font-weight="600" font-size="18" fill="#111111">SentinelAI</text>
   <text x="24" y="72" font-family="Geist, system-ui, -apple-system, sans-serif" font-size="14" fill="#3a3a3c">YouTube sentiment analytics with</text><text x="24" y="93" font-family="Geist, system-ui, -apple-system, sans-serif" font-size="14" fill="#3a3a3c">RoBERTa and emoji heatmaps, 5000+</text><text x="24" y="114" font-family="Geist, system-ui, -apple-system, sans-serif" font-size="14" fill="#3a3a3c">comments.</text>
   <text x="24" y="152" font-family="'Geist Mono', ui-monospace, Menlo, monospace" font-size="12" fill="#6e6e73">TypeScript</text>

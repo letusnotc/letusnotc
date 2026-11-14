@@ -34,17 +34,17 @@ TERMINAL = [
     ("vision, multimodal AI, LLM agents", "out"),
 ]
 TILES = [  # file, label, colour, text colour, number, word, blurb
-    ("build", "BUILD", "blue", "#ffffff", "3", "AI products",
+    ("build", "BUILD", "forest", "#ffffff", "3", "AI products",
      "SwasthyaAI, Vachan Pay and SentinelAI: health, voice payments and sentiment."),
-    ("win", "HACKATHONS", "red", "#ffffff", "4", "podiums",
+    ("win", "HACKATHONS", "olive", "#111111", "4", "podiums",
      "1st at a national hackathon and at Lazarus Mission, Codeutsava 9.0 winner, 2nd at Think Plus."),
-    ("rank", "KAGGLE", "yellow", "#111111", "9", "of 4000+",
+    ("rank", "KAGGLE", "amber", "#111111", "9", "of 4000+",
      "Best Playground Series rank. Also 38 of 2500+, and 4th at NIT Kurukshetra."),
 ]
 REPOS = [  # repo (None = no public repo), title, description, language, colour
-    ("bp-proba-api", "SwasthyaAI", "BP prediction with ARIMA forecasts and Gemini insights. 23% better early risk detection.", "Next.js · MongoDB", "blue"),
-    ("vachan-pay", "Vachan Pay", "Voice UPI payments in English and Hindi. 95%+ command accuracy across accents.", "TypeScript", "red"),
-    ("SENTINEL.AI", "SentinelAI", "YouTube sentiment analytics with RoBERTa and emoji heatmaps, 5000+ comments.", "TypeScript", "yellow"),
+    ("bp-proba-api", "SwasthyaAI", "BP prediction with ARIMA forecasts and Gemini insights. 23% better early risk detection.", "Next.js · MongoDB", "forest"),
+    ("vachan-pay", "Vachan Pay", "Voice UPI payments in English and Hindi. 95%+ command accuracy across accents.", "TypeScript", "olive"),
+    ("SENTINEL.AI", "SentinelAI", "YouTube sentiment analytics with RoBERTa and emoji heatmaps, 5000+ comments.", "TypeScript", "amber"),
 ]
 STACK = [
     ("LANGUAGES", "Python, C++, MySQL"),
@@ -64,8 +64,8 @@ WINS = [
 
 # ---- look ---------------------------------------------------------------------------------
 PAPER, PAPER_DEEP, INK, INK_SOFT, MUTED, RULE = "#f3f3f1", "#e2e2de", "#111111", "#3a3a3c", "#6e6e73", "#dcdcd7"
-COLOR = {"blue": "#2f55ff", "red": "#ef3b2d", "yellow": "#ffc81a"}
-BLUE = [PAPER_DEEP, "#c8d3ff", "#94a8ff", "#6280ff", COLOR["blue"], "#1a3be0"]
+COLOR = {"forest": "#587529", "olive": "#71951E", "amber": "#F4BE38", "sun": "#EDDA5E"}
+RAMP = [PAPER_DEEP, COLOR["sun"], COLOR["amber"], COLOR["olive"], COLOR["forest"], "#3d5219"]
 W, GAP = 880, 12
 THIRD = W / 3 - 8  # three cards plus two 12px gaps fill the column
 SERIF = "'Instrument Serif', Georgia, serif"
@@ -199,7 +199,7 @@ def hero():
     h = 400
     term = []
     for i, (t, kind) in enumerate(TERMINAL):
-        fill = COLOR["blue"] if kind == "cmd" else INK_SOFT
+        fill = COLOR["forest"] if kind == "cmd" else INK_SOFT
         gap = 10 if kind == "cmd" and i else 0
         term.append((t, fill, gap))
     y, rows = 96, []
@@ -210,13 +210,13 @@ def hero():
     cursor_y = y - 24 + 6
     body = f"""
 <defs><linearGradient id="shine" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="600" y2="0">
-  <stop offset="0" stop-color="{INK}"/><stop offset=".42" stop-color="{INK}"/><stop offset=".5" stop-color="{COLOR['blue']}"/>
+  <stop offset="0" stop-color="{INK}"/><stop offset=".42" stop-color="{INK}"/><stop offset=".5" stop-color="{COLOR['amber']}"/>
   <stop offset=".58" stop-color="{INK}"/><stop offset="1" stop-color="{INK}"/>
   {"" if STATIC else '<animateTransform attributeName="gradientTransform" type="translate" values="-600 0;600 0;600 0" keyTimes="0;.45;1" dur="7s" begin="1.6s" repeatCount="indefinite"/>'}
 </linearGradient></defs>
 <rect width="{W}" height="{h}" rx="14" fill="{PAPER}"/>
 <g class="in" {at(0)}>
-  <rect class="blink" x="48" y="49" width="8" height="8" rx="2" fill="{COLOR['blue']}"/>
+  <rect class="blink" x="48" y="49" width="8" height="8" rx="2" fill="{COLOR['forest']}"/>
   <text x="66" y="57" font-family="{MONO}" font-size="12" letter-spacing="1" fill="{MUTED}">{escape(KICKER)}</text>
 </g>
 <text class="up" {at(0.15)} x="44" y="180" font-family="{SERIF}" font-size="112" letter-spacing="-2.5" fill="{INK}">{FIRST}</text>
@@ -224,7 +224,7 @@ def hero():
 <g class="up" {at(0.55)}>{lines_svg(48, 318, TAGLINE, 27, f'font-family="{SANS}" font-size="18" fill="{INK_SOFT}"')}</g>
 <g class="in" {at(0.8)}>
   <text x="48" y="376" font-family="{MONO}" font-size="13" fill="{INK}">github.com/{USER}</text>
-  <text x="{48 + 7.8 * len('github.com/' + USER) + 8:.0f}" y="376" font-family="{MONO}" font-size="13" fill="{COLOR['blue']}">&#8599;</text>
+  <text x="{48 + 7.8 * len('github.com/' + USER) + 8:.0f}" y="376" font-family="{MONO}" font-size="13" fill="{COLOR['forest']}">&#8599;</text>
 </g>
 <rect class="in" {at(0.7)} x="516" y="60" width="330" height="{cursor_y - 60 + 30}" rx="10" fill="#ffffff" stroke="{RULE}"/>
 {''.join(rows)}
@@ -278,22 +278,22 @@ def heatmap(data):
         c = day["count"]
         level = 0 if c == 0 else 1 if c <= 3 else 2 if c <= 8 else 3 if c <= 15 else 4 if c <= 30 else 5
         cells.append(f'<rect class="dot" {at(1.0 + col * 0.03 + row * 0.02)} x="{gx + col * step}" y="{gy + row * step}" '
-                     f'width="12" height="12" rx="3" fill="{BLUE[level]}"><title>{day["date"]}: {c}</title></rect>')
+                     f'width="12" height="12" rx="3" fill="{RAMP[level]}"><title>{day["date"]}: {c}</title></rect>')
     right = gx + ((len(days) + lead + 6) // 7) * step - 3
     ly = gy + 7 * step + 16
     labels = "".join(f'<text x="{gx + c * step}" y="{ly}" font-family="{MONO}" font-size="11" fill="{MUTED}">{m}</text>'
                      for c, m in months if gx + c * step < right - 150)
-    lx = right - len(BLUE) * 14
-    legend = "".join(f'<rect x="{lx + i * 14}" y="{ly - 10}" width="11" height="11" rx="2.5" fill="{c}"/>' for i, c in enumerate(BLUE))
+    lx = right - len(RAMP) * 14
+    legend = "".join(f'<rect x="{lx + i * 14}" y="{ly - 10}" width="11" height="11" rx="2.5" fill="{c}"/>' for i, c in enumerate(RAMP))
     h = gy + 7 * step + 44
     body = f"""
 <rect width="{W}" height="{h}" rx="14" fill="{PAPER}"/>
-<text class="up" {at(0.8)} x="42" y="62" font-family="{SERIF}" font-size="34" fill="{INK}">Every day, <tspan font-style="italic" fill="{COLOR['blue']}">in blue</tspan></text>
+<text class="up" {at(0.8)} x="42" y="62" font-family="{SERIF}" font-size="34" fill="{INK}">Every day, <tspan font-style="italic" fill="{COLOR['forest']}">in green</tspan></text>
 <text class="in" {at(0.8)} x="{right}" y="60" text-anchor="end" font-family="{MONO}" font-size="12" letter-spacing="1" fill="{MUTED}">REFRESHED DAILY</text>
 {''.join(cells)}
 <g class="in" {at(2.4)}>{labels}
 <text x="{lx - 8}" y="{ly}" text-anchor="end" font-family="{MONO}" font-size="11" fill="{MUTED}">less</text>{legend}
-<text x="{lx + len(BLUE) * 14 + 2}" y="{ly}" font-family="{MONO}" font-size="11" fill="{MUTED}">more</text></g>"""
+<text x="{lx + len(RAMP) * 14 + 2}" y="{ly}" font-family="{MONO}" font-size="11" fill="{MUTED}">more</text></g>"""
     save("heatmap.svg", W, h, body, f"Contribution graph: {data['total']:,} contributions in the last year", ["serif", "serif-i", "mono"])
 
 
@@ -308,13 +308,13 @@ def activity(data):
     for i, m in enumerate(monthly):
         bh = max(4, round(min(m["total"], top) / top * maxh))
         x = x0 + i * (bw + gap)
-        fill = COLOR["blue"] if m is best else ("#c9c9c4" if i == len(monthly) - 1 else INK)
+        fill = COLOR["forest"] if m is best else ("#c9c9c4" if i == len(monthly) - 1 else INK)
         label = dt.date.fromisoformat(m["month"] + "-01").strftime("%b")
         bars.append(f'<rect class="bar" {at(2.0 + i * 0.07)} x="{x:.1f}" y="{base - bh}" width="{bw:.1f}" height="{bh}" rx="4" fill="{fill}">'
                     f'<title>{label}: {m["total"]:,}</title></rect>'
                     f'<text class="in" {at(2.0 + i * 0.07)} x="{x + bw / 2:.1f}" y="{base + 22}" text-anchor="middle" font-family="{MONO}" font-size="11" fill="{MUTED}">{label}</text>')
         if m is best:
-            bars.append(f'<text class="dot" {at(3.0)} x="{x + bw / 2:.1f}" y="{base - bh - 10}" text-anchor="middle" font-family="{MONO}" font-size="11" fill="{COLOR["blue"]}">{m["total"]:,}</text>')
+            bars.append(f'<text class="dot" {at(3.0)} x="{x + bw / 2:.1f}" y="{base - bh - 10}" text-anchor="middle" font-family="{MONO}" font-size="11" fill="{COLOR["forest"]}">{m["total"]:,}</text>')
     cur, lng = data["current"], data["longest"]
     stats = [(f'{cur} <tspan font-style="italic">{"day" if cur == 1 else "days"}</tspan>',
               "current streak, and the longest" if cur >= lng else f"current streak, longest {lng}"),
@@ -359,7 +359,7 @@ def stack():
     rows, y = [], 112
     for i, (label, tools) in enumerate(STACK):
         lines = wrap(tools, 62)
-        rows.append(f'<g class="up" {at(0.4 + i * 0.1)}><text x="40" y="{y}" font-family="{MONO}" font-size="12" letter-spacing="1" fill="{COLOR["blue"]}">{escape(label)}</text>'
+        rows.append(f'<g class="up" {at(0.4 + i * 0.1)}><text x="40" y="{y}" font-family="{MONO}" font-size="12" letter-spacing="1" fill="{COLOR["forest"]}">{escape(label)}</text>'
                     + lines_svg(250, y, lines, 22, f'font-family="{SANS}" font-size="15" fill="{INK_SOFT}"') + "</g>")
         y += 22 * len(lines) + 12
         if i < len(STACK) - 1:
@@ -376,7 +376,7 @@ def wins():
     cols = []
     for c, (label, items) in enumerate(WINS):
         x = 40 + c * 410
-        out = f'<text x="{x}" y="112" font-family="{MONO}" font-size="12" letter-spacing="1" fill="{COLOR["red"]}">{label}</text>'
+        out = f'<text x="{x}" y="112" font-family="{MONO}" font-size="12" letter-spacing="1" fill="{COLOR["forest"]}">{label}</text>'
         y = 144
         for item in items:
             ls = wrap(item, 46)
@@ -385,7 +385,7 @@ def wins():
         cols.append((f'<g class="up" {at(0.4 + c * 0.15)}>{out}</g>', y))
     h = max(y for _, y in cols) + 16
     body = f"""<rect width="{W}" height="{h}" rx="14" fill="{PAPER}"/>
-<text class="up" {at(0.2)} x="40" y="62" font-family="{SERIF}" font-size="34" fill="{INK}">Wins, <tspan font-style="italic" fill="{COLOR['red']}">so far</tspan></text>
+<text class="up" {at(0.2)} x="40" y="62" font-family="{SERIF}" font-size="34" fill="{INK}">Wins, <tspan font-style="italic" fill="{COLOR['olive']}">so far</tspan></text>
 {''.join(c for c, _ in cols)}"""
     save("wins.svg", W, h, body, "Achievements. " + " ".join(f"{a}: {'; '.join(b)}." for a, b in WINS), ["serif", "serif-i", "sans", "mono"])
 
