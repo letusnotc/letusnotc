@@ -17,23 +17,13 @@ from html import escape, unescape
 USER = "letusnotc"
 SITE = "arnav-pandey.vercel.app"
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-OUT, FONTS, DATA = (os.path.join(ROOT, p) for p in ("cards", "fonts", "data/contributions.json"))
+OUT, FONTS, DATA, PORTRAIT = (os.path.join(ROOT, p) for p in ("cards", "fonts", "data/contributions.json", "portrait.txt"))
 STATIC = bool(os.environ.get("STATIC"))
 
 # ---- your content -----------------------------------------------------------------------
 KICKER = "AI & ML ENGINEER  ·  IIIT NAYA RAIPUR"
 FIRST, LAST = "Arnav", "Pandey"
 TAGLINE = ["I build AI systems that solve real problems,", "from health monitoring to voice payments."]
-TERMINAL = [
-    ("$ whoami", "cmd"),
-    ("B.Tech Data Science & AI", "out"),
-    ("competitive programmer", "out"),
-    ("$ cat stack.txt", "cmd"),
-    ("python  c++  pytorch  tensorflow", "out"),
-    ("opencv  huggingface  langchain  fastapi", "out"),
-    ("$ learning --now", "cmd"),
-    ("vision, multimodal AI, LLM agents", "out"),
-]
 TILES = [  # file, label, number, word, blurb
     ("build", "BUILD", "3", "AI products",
      "SwasthyaAI, Vachan Pay and SentinelAI: health, voice payments and sentiment."),
@@ -70,7 +60,6 @@ STOPS = [(0, "#A0E0EF"), (.34, "#60C1E5"), (.68, "#005A9C"), (1, "#1B365D")]
 ROWS = ["hero", "heatmap", "activity", "tiles", "stack", "repos", "wins"]
 PAPER = "url(#bg)"
 INK = INK_SOFT = MUTED = RULE = BG_DEFS = ""  # set per row by paint()
-TERM_CMD, TERM_OUT = "#A0E0EF", "#f2f8fb"  # terminal text on its dark panel
 RAMP = [.1, .3, .5, .68, .84, 1]  # heatmap: opacity of the text colour per activity level
 W, GAP = 880, 12
 THIRD = W / 3 - 8  # three cards plus two 12px gaps fill the column
@@ -243,17 +232,12 @@ def repo_meta():
 # ---- cards --------------------------------------------------------------------------------
 def hero():
     h = 400
-    term = []
-    for i, (t, kind) in enumerate(TERMINAL):
-        fill = TERM_CMD if kind == "cmd" else TERM_OUT
-        gap = 10 if kind == "cmd" and i else 0
-        term.append((t, fill, gap))
-    y, rows = 96, []
-    for i, (t, fill, gap) in enumerate(term):
-        y += gap
-        rows.append(f'<text class="in" {at(0.9 + i * 0.22)} x="540" y="{y}" font-family="{MONO}" font-size="12.5" fill="{fill}">{escape(t)}</text>')
-        y += 24
-    cursor_y = y - 24 + 6
+    art = open(PORTRAIT, encoding="utf-8").read().splitlines()  # from scripts/make_ascii.py
+    cols, lh, top = max(map(len, art)), 340 / len(art), 30
+    # rows "print" top to bottom like a slow terminal; padding every row keeps textLength from stretching short ones
+    rows = "".join(f'<text class="in" style="animation-delay:{0.25 + i * 0.03:.2f}s;animation-duration:.35s" xml:space="preserve" '
+                   f'x="500" y="{top + (i + 1) * lh:.1f}" textLength="340" lengthAdjust="spacing" font-family="{MONO}" '
+                   f'font-size="7.4" fill="{INK}">{escape(line.ljust(cols))}</text>' for i, line in enumerate(art))
     body = f"""
 <defs><linearGradient id="shine" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="600" y2="0">
   <stop offset="0" stop-color="{INK}"/><stop offset=".42" stop-color="{INK}"/><stop offset=".5" stop-color="#005A9C"/>
@@ -272,9 +256,7 @@ def hero():
   <text x="48" y="376" font-family="{MONO}" font-size="13" fill="{INK}">{SITE}</text>
   <text x="{48 + 7.8 * len(SITE) + 8:.0f}" y="376" font-family="{MONO}" font-size="13" fill="{INK}">&#8599;</text>
 </g>
-<rect class="in" {at(0.7)} x="516" y="60" width="330" height="{cursor_y - 60 + 30}" rx="10" fill="#000000" fill-opacity=".8"/>
-{''.join(rows)}
-<rect class="blink" x="540" y="{cursor_y + 4}" width="8" height="14" fill="{TERM_OUT}"/>
+{rows}
 """
     save("hero.svg", W, h, body, f"{FIRST} {LAST}. {KICKER}. {' '.join(TAGLINE)}", ["serif", "serif-i", "sans", "mono"])
 
