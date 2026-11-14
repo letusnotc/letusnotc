@@ -34,18 +34,18 @@ TERMINAL = [
     ("$ learning --now", "cmd"),
     ("vision, multimodal AI, LLM agents", "out"),
 ]
-TILES = [  # file, label, colour, text colour, number, word, blurb
-    ("build", "BUILD", "forest", "#ffffff", "3", "AI products",
+TILES = [  # file, label, number, word, blurb
+    ("build", "BUILD", "3", "AI products",
      "SwasthyaAI, Vachan Pay and SentinelAI: health, voice payments and sentiment."),
-    ("win", "HACKATHONS", "olive", "#111111", "4", "podiums",
+    ("win", "HACKATHONS", "4", "podiums",
      "1st at a national hackathon and at Lazarus Mission, Codeutsava 9.0 winner, 2nd at Think Plus."),
-    ("rank", "KAGGLE", "amber", "#111111", "9", "of 4000+",
+    ("rank", "KAGGLE", "9", "of 4000+",
      "Best Playground Series rank. Also 38 of 2500+, and 4th at NIT Kurukshetra."),
 ]
-REPOS = [  # repo (None = no public repo), title, description, language, colour
-    ("bp-proba-api", "SwasthyaAI", "BP prediction with ARIMA forecasts and Gemini insights. 23% better early risk detection.", "Next.js · MongoDB", "forest"),
-    ("vachan-pay", "Vachan Pay", "Voice UPI payments in English and Hindi. 95%+ command accuracy across accents.", "TypeScript", "olive"),
-    ("SENTINEL.AI", "SentinelAI", "YouTube sentiment analytics with RoBERTa and emoji heatmaps, 5000+ comments.", "TypeScript", "amber"),
+REPOS = [  # repo, title, description, language
+    ("bp-proba-api", "SwasthyaAI", "BP prediction with ARIMA forecasts and Gemini insights. 23% better early risk detection.", "Next.js · MongoDB"),
+    ("vachan-pay", "Vachan Pay", "Voice UPI payments in English and Hindi. 95%+ command accuracy across accents.", "TypeScript"),
+    ("SENTINEL.AI", "SentinelAI", "YouTube sentiment analytics with RoBERTa and emoji heatmaps, 5000+ comments.", "TypeScript"),
 ]
 STACK = [
     ("LANGUAGES", "Python, C++, MySQL"),
@@ -64,9 +64,14 @@ WINS = [
 ]
 
 # ---- look ---------------------------------------------------------------------------------
-PAPER, PAPER_DEEP, INK, INK_SOFT, MUTED, RULE = "#f3f3f1", "#e2e2de", "#111111", "#3a3a3c", "#6e6e73", "#dcdcd7"
-COLOR = {"forest": "#587529", "olive": "#71951E", "amber": "#F4BE38", "sun": "#EDDA5E"}
-RAMP = [PAPER_DEEP, COLOR["sun"], COLOR["amber"], COLOR["olive"], COLOR["forest"], "#3d5219"]
+# All cards form one top-to-bottom gradient, one slice per row. Olive sits at .53 rather than
+# evenly spaced so the darker rows can still hold 4.5:1 text in black (repos) or white (wins).
+STOPS = [(0, "#F4BE38"), (.25, "#EDDA5E"), (.53, "#71951E"), (1, "#587529")]
+ROWS = ["hero", "heatmap", "activity", "tiles", "stack", "repos", "wins"]
+PAPER = "url(#bg)"
+INK = INK_SOFT = MUTED = RULE = BG_DEFS = ""  # set per row by paint()
+TERM_CMD, TERM_OUT = "#EDDA5E", "#f6f1dc"  # terminal text on its dark panel
+RAMP = [.1, .3, .5, .68, .84, 1]  # heatmap: opacity of the text colour per activity level
 W, GAP = 880, 12
 THIRD = W / 3 - 8  # three cards plus two 12px gaps fill the column
 SERIF = "'Instrument Serif', Georgia, serif"
@@ -111,11 +116,51 @@ def save(name, w, h, body, label, keys, left=0, right=0, bottom=GAP):
     css = fonts(keys) + CSS + (STILL if STATIC else "")
     svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{w2:.3f}" height="{h2}" viewBox="0 0 {w2:.3f} {h2}" '
            f'role="img" aria-label="{escape(label)}"><title>{escape(label)}</title><style>{css}</style>'
-           f'<g transform="translate({left:.3f} 0)">{body}</g></svg>')
+           f'{BG_DEFS}<g transform="translate({left:.3f} 0)">{body}</g></svg>')
     os.makedirs(OUT, exist_ok=True)
     with open(os.path.join(OUT, name), "w", encoding="utf-8") as f:
         f.write(svg)
     print(f"wrote cards/{name} ({len(svg) // 1024} KB)")
+
+
+def hexmix(a, b, t):
+    return "#" + "".join(f"{round(int(a[i:i + 2], 16) * (1 - t) + int(b[i:i + 2], 16) * t):02x}" for i in (1, 3, 5))
+
+
+def contrast(a, b):
+    def lum(h):
+        c = [int(h[i:i + 2], 16) / 255 for i in (1, 3, 5)]
+        c = [x / 12.92 if x <= .03928 else ((x + .055) / 1.055) ** 2.4 for x in c]
+        return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]
+    hi, lo = sorted((lum(a), lum(b)), reverse=True)
+    return (hi + .05) / (lo + .05)
+
+
+def grad(p):
+    for (p0, c0), (p1, c1) in zip(STOPS, STOPS[1:]):
+        if p <= p1:
+            return hexmix(c0, c1, (p - p0) / (p1 - p0))
+    return STOPS[-1][1]
+
+
+def paint(row):
+    """Set the background slice and text colours for one row; stop if any text would fall under 4.5:1."""
+    global INK, INK_SOFT, MUTED, RULE, BG_DEFS
+    i = ROWS.index(row)
+    samples = [grad((i + k / 10) / len(ROWS)) for k in range(11)]
+    worst = lambda c: min(contrast(c, s) for s in samples)
+    ink = max(("#000000", "#ffffff"), key=worst)
+    mid = samples[5]
+
+    def soft(t):  # ink faded toward the background, only as far as 4.5:1 allows
+        for tt in (t, t / 2, 0):
+            if worst(hexmix(ink, mid, tt)) >= 4.5:
+                return hexmix(ink, mid, tt)
+        raise SystemExit(f"{row}: text contrast {worst(ink):.2f} is under 4.5:1, adjust STOPS")
+
+    INK, INK_SOFT, MUTED, RULE = soft(0), soft(.2), soft(.35), hexmix(ink, mid, .7)
+    stops = "".join(f'<stop offset="{k / 10}" stop-color="{c}"/>' for k, c in enumerate(samples))
+    BG_DEFS = f'<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">{stops}</linearGradient></defs>'
 
 
 def at(s):
@@ -200,7 +245,7 @@ def hero():
     h = 400
     term = []
     for i, (t, kind) in enumerate(TERMINAL):
-        fill = COLOR["forest"] if kind == "cmd" else INK_SOFT
+        fill = TERM_CMD if kind == "cmd" else TERM_OUT
         gap = 10 if kind == "cmd" and i else 0
         term.append((t, fill, gap))
     y, rows = 96, []
@@ -211,13 +256,13 @@ def hero():
     cursor_y = y - 24 + 6
     body = f"""
 <defs><linearGradient id="shine" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="600" y2="0">
-  <stop offset="0" stop-color="{INK}"/><stop offset=".42" stop-color="{INK}"/><stop offset=".5" stop-color="{COLOR['amber']}"/>
+  <stop offset="0" stop-color="{INK}"/><stop offset=".42" stop-color="{INK}"/><stop offset=".5" stop-color="#ffffff"/>
   <stop offset=".58" stop-color="{INK}"/><stop offset="1" stop-color="{INK}"/>
   {"" if STATIC else '<animateTransform attributeName="gradientTransform" type="translate" values="-600 0;600 0;600 0" keyTimes="0;.45;1" dur="7s" begin="1.6s" repeatCount="indefinite"/>'}
 </linearGradient></defs>
 <rect width="{W}" height="{h}" rx="14" fill="{PAPER}"/>
 <g class="in" {at(0)}>
-  <rect class="blink" x="48" y="49" width="8" height="8" rx="2" fill="{COLOR['forest']}"/>
+  <rect class="blink" x="48" y="49" width="8" height="8" rx="2" fill="{INK}"/>
   <text x="66" y="57" font-family="{MONO}" font-size="12" letter-spacing="1" fill="{MUTED}">{escape(KICKER)}</text>
 </g>
 <text class="up" {at(0.15)} x="44" y="180" font-family="{SERIF}" font-size="112" letter-spacing="-2.5" fill="{INK}">{FIRST}</text>
@@ -225,11 +270,11 @@ def hero():
 <g class="up" {at(0.55)}>{lines_svg(48, 318, TAGLINE, 27, f'font-family="{SANS}" font-size="18" fill="{INK_SOFT}"')}</g>
 <g class="in" {at(0.8)}>
   <text x="48" y="376" font-family="{MONO}" font-size="13" fill="{INK}">{SITE}</text>
-  <text x="{48 + 7.8 * len(SITE) + 8:.0f}" y="376" font-family="{MONO}" font-size="13" fill="{COLOR['forest']}">&#8599;</text>
+  <text x="{48 + 7.8 * len(SITE) + 8:.0f}" y="376" font-family="{MONO}" font-size="13" fill="{INK}">&#8599;</text>
 </g>
-<rect class="in" {at(0.7)} x="516" y="60" width="330" height="{cursor_y - 60 + 30}" rx="10" fill="#ffffff" stroke="{RULE}"/>
+<rect class="in" {at(0.7)} x="516" y="60" width="330" height="{cursor_y - 60 + 30}" rx="10" fill="#000000" fill-opacity=".8"/>
 {''.join(rows)}
-<rect class="blink" x="540" y="{cursor_y + 4}" width="8" height="14" fill="{INK}"/>
+<rect class="blink" x="540" y="{cursor_y + 4}" width="8" height="14" fill="{TERM_OUT}"/>
 """
     save("hero.svg", W, h, body, f"{FIRST} {LAST}. {KICKER}. {' '.join(TAGLINE)}", ["serif", "serif-i", "sans", "mono"])
 
@@ -248,17 +293,17 @@ def count_up(num, word, x, y, attrs, begin, dur=1.1, frames=18):
     return "".join(out)
 
 
-def tile(pos, name, label, colour, on, num, word, blurb):
+def tile(pos, name, label, num, word, blurb):
     delay = 2.9 + pos * 0.25
     h = 210
-    text = "".join(f'<text x="24" y="{148 + i * 20}" font-family="{SANS}" font-size="14" fill="{on}" opacity=".92">{escape(t)}</text>'
+    text = "".join(f'<text x="24" y="{148 + i * 20}" font-family="{SANS}" font-size="14" fill="{INK_SOFT}">{escape(t)}</text>'
                    for i, t in enumerate(wrap(blurb, 36)[:3]))
     body = f"""
 <g class="drop" {at(delay)}>
-  <rect width="{THIRD}" height="{h}" rx="14" fill="{COLOR[colour]}"/>
-  <text x="24" y="38" font-family="{MONO}" font-size="12" letter-spacing="1.2" fill="{on}">{label}</text>
-  <text x="{THIRD - 34:.0f}" y="38" font-family="{MONO}" font-size="14" fill="{on}">&#8594;</text>
-  {count_up(num, word, 22, 108, f'font-family="{SERIF}" font-size="44" fill="{on}"', delay + 0.4)}
+  <rect width="{THIRD}" height="{h}" rx="14" fill="{PAPER}"/>
+  <text x="24" y="38" font-family="{MONO}" font-size="12" letter-spacing="1.2" fill="{INK}">{label}</text>
+  <text x="{THIRD - 34:.0f}" y="38" font-family="{MONO}" font-size="14" fill="{INK}">&#8594;</text>
+  {count_up(num, word, 22, 108, f'font-family="{SERIF}" font-size="44" fill="{INK}"', delay + 0.4)}
   {text}
 </g>"""
     save(f"{name}.svg", THIRD, h, body, f"{label}: {num} {word}. {blurb}", ["serif", "serif-i", "sans", "mono"],
@@ -279,17 +324,17 @@ def heatmap(data):
         c = day["count"]
         level = 0 if c == 0 else 1 if c <= 3 else 2 if c <= 8 else 3 if c <= 15 else 4 if c <= 30 else 5
         cells.append(f'<rect class="dot" {at(1.0 + col * 0.03 + row * 0.02)} x="{gx + col * step}" y="{gy + row * step}" '
-                     f'width="12" height="12" rx="3" fill="{RAMP[level]}"><title>{day["date"]}: {c}</title></rect>')
+                     f'width="12" height="12" rx="3" fill="{INK}" fill-opacity="{RAMP[level]}"><title>{day["date"]}: {c}</title></rect>')
     right = gx + ((len(days) + lead + 6) // 7) * step - 3
     ly = gy + 7 * step + 16
     labels = "".join(f'<text x="{gx + c * step}" y="{ly}" font-family="{MONO}" font-size="11" fill="{MUTED}">{m}</text>'
                      for c, m in months if gx + c * step < right - 150)
     lx = right - len(RAMP) * 14
-    legend = "".join(f'<rect x="{lx + i * 14}" y="{ly - 10}" width="11" height="11" rx="2.5" fill="{c}"/>' for i, c in enumerate(RAMP))
+    legend = "".join(f'<rect x="{lx + i * 14}" y="{ly - 10}" width="11" height="11" rx="2.5" fill="{INK}" fill-opacity="{c}"/>' for i, c in enumerate(RAMP))
     h = gy + 7 * step + 44
     body = f"""
 <rect width="{W}" height="{h}" rx="14" fill="{PAPER}"/>
-<text class="up" {at(0.8)} x="42" y="62" font-family="{SERIF}" font-size="34" fill="{INK}">Every day, <tspan font-style="italic" fill="{COLOR['forest']}">in green</tspan></text>
+<text class="up" {at(0.8)} x="42" y="62" font-family="{SERIF}" font-size="34" fill="{INK}">Every day, <tspan font-style="italic">in green</tspan></text>
 <text class="in" {at(0.8)} x="{right}" y="60" text-anchor="end" font-family="{MONO}" font-size="12" letter-spacing="1" fill="{MUTED}">REFRESHED DAILY</text>
 {''.join(cells)}
 <g class="in" {at(2.4)}>{labels}
@@ -309,17 +354,17 @@ def activity(data):
     for i, m in enumerate(monthly):
         bh = max(4, round(min(m["total"], top) / top * maxh))
         x = x0 + i * (bw + gap)
-        fill = COLOR["forest"] if m is best else ("#c9c9c4" if i == len(monthly) - 1 else INK)
+        opacity = 1 if m is best else (.15 if i == len(monthly) - 1 else .4)
         label = dt.date.fromisoformat(m["month"] + "-01").strftime("%b")
-        bars.append(f'<rect class="bar" {at(2.0 + i * 0.07)} x="{x:.1f}" y="{base - bh}" width="{bw:.1f}" height="{bh}" rx="4" fill="{fill}">'
+        bars.append(f'<rect class="bar" {at(2.0 + i * 0.07)} x="{x:.1f}" y="{base - bh}" width="{bw:.1f}" height="{bh}" rx="4" fill="{INK}" fill-opacity="{opacity}">'
                     f'<title>{label}: {m["total"]:,}</title></rect>'
                     f'<text class="in" {at(2.0 + i * 0.07)} x="{x + bw / 2:.1f}" y="{base + 22}" text-anchor="middle" font-family="{MONO}" font-size="11" fill="{MUTED}">{label}</text>')
         if m is best:
-            bars.append(f'<text class="dot" {at(3.0)} x="{x + bw / 2:.1f}" y="{base - bh - 10}" text-anchor="middle" font-family="{MONO}" font-size="11" fill="{COLOR["forest"]}">{m["total"]:,}</text>')
+            bars.append(f'<text class="dot" {at(3.0)} x="{x + bw / 2:.1f}" y="{base - bh - 10}" text-anchor="middle" font-family="{MONO}" font-size="11" fill="{INK}">{m["total"]:,}</text>')
     cur, lng = data["current"], data["longest"]
     stats = [(f'{cur} <tspan font-style="italic">{"day" if cur == 1 else "days"}</tspan>',
               "current streak, and the longest" if cur >= lng else f"current streak, longest {lng}"),
-             (f'{data["active"]}<tspan fill="#8e8e93"> / {len(data["days"])}</tspan>', "days with a commit"),
+             (f'{data["active"]}<tspan fill="{MUTED}"> / {len(data["days"])}</tspan>', "days with a commit"),
              (str(data["best_day"]["count"]), "on the busiest day")]
     side = []
     for i, (big, small) in enumerate(stats):
@@ -342,13 +387,13 @@ def title(name, text, italic):
         save(f"title-{name}-{theme}.svg", W, 64, body, f"{text} {italic}", ["serif", "serif-i"], bottom=0)
 
 
-def repo_card(pos, repo, name, desc, lang, colour, stars):
+def repo_card(pos, repo, name, desc, lang, stars):
     h = 176
     meta = lang + (f"  ·  ★ {stars}" if stars else "")
     body = f"""
 <rect width="{THIRD}" height="{h}" rx="14" fill="{PAPER}"/>
 <g class="up" {at(0.5 + pos * 0.12)}>
-  <rect x="24" y="30" width="8" height="8" rx="2" fill="{COLOR[colour]}"/>
+  <rect x="24" y="30" width="8" height="8" rx="2" fill="{INK}"/>
   <text x="40" y="39" font-family="{SANS}" font-weight="600" font-size="18" fill="{INK}">{escape(name)}</text>
   {lines_svg(24, 72, wrap(desc, 36)[:3], 21, f'font-family="{SANS}" font-size="14" fill="{INK_SOFT}"')}
   <text x="24" y="{h - 24}" font-family="{MONO}" font-size="12" fill="{MUTED}">{escape(meta)}</text>
@@ -360,7 +405,7 @@ def stack():
     rows, y = [], 112
     for i, (label, tools) in enumerate(STACK):
         lines = wrap(tools, 62)
-        rows.append(f'<g class="up" {at(0.4 + i * 0.1)}><text x="40" y="{y}" font-family="{MONO}" font-size="12" letter-spacing="1" fill="{COLOR["forest"]}">{escape(label)}</text>'
+        rows.append(f'<g class="up" {at(0.4 + i * 0.1)}><text x="40" y="{y}" font-family="{MONO}" font-size="12" letter-spacing="1" fill="{INK}">{escape(label)}</text>'
                     + lines_svg(250, y, lines, 22, f'font-family="{SANS}" font-size="15" fill="{INK_SOFT}"') + "</g>")
         y += 22 * len(lines) + 12
         if i < len(STACK) - 1:
@@ -377,7 +422,7 @@ def wins():
     cols = []
     for c, (label, items) in enumerate(WINS):
         x = 40 + c * 410
-        out = f'<text x="{x}" y="112" font-family="{MONO}" font-size="12" letter-spacing="1" fill="{COLOR["forest"]}">{label}</text>'
+        out = f'<text x="{x}" y="112" font-family="{MONO}" font-size="12" letter-spacing="1" fill="{INK}">{label}</text>'
         y = 144
         for item in items:
             ls = wrap(item, 46)
@@ -386,7 +431,7 @@ def wins():
         cols.append((f'<g class="up" {at(0.4 + c * 0.15)}>{out}</g>', y))
     h = max(y for _, y in cols) + 16
     body = f"""<rect width="{W}" height="{h}" rx="14" fill="{PAPER}"/>
-<text class="up" {at(0.2)} x="40" y="62" font-family="{SERIF}" font-size="34" fill="{INK}">Wins, <tspan font-style="italic" fill="{COLOR['olive']}">so far</tspan></text>
+<text class="up" {at(0.2)} x="40" y="62" font-family="{SERIF}" font-size="34" fill="{INK}">Wins, <tspan font-style="italic">so far</tspan></text>
 {''.join(c for c, _ in cols)}"""
     save("wins.svg", W, h, body, "Achievements. " + " ".join(f"{a}: {'; '.join(b)}." for a, b in WINS), ["serif", "serif-i", "sans", "mono"])
 
@@ -403,19 +448,27 @@ def selftest():
     s = summarise(days)
     assert (s["total"], s["current"], s["longest"], s["active"]) == (13, 2, 2, 2), s
     assert summarise(days + [{"date": "2025-01-04", "count": 0}])["current"] == 2  # today empty keeps streak
+    assert grad(0) == "#f4be38" and grad(1) == "#587529" and round(contrast("#000000", "#ffffff"), 1) == 21.0
 
 
 if __name__ == "__main__":
     selftest()
     data = load()
+    paint("hero")
     hero()
+    paint("heatmap")
     heatmap(data)
+    paint("activity")
     activity(data)
+    paint("tiles")
     for pos, t in enumerate(TILES):
         tile(pos, *t)
+    paint("stack")
     stack()
     title("building", "What I'm", "building")
     stars = repo_meta()
+    paint("repos")
     for pos, r in enumerate(REPOS):
         repo_card(pos, *r, stars.get(r[0]))
+    paint("wins")
     wins()
