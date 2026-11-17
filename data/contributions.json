@@ -1463,11 +1463,15 @@
   {
    "date": "2026-11-16",
    "count": 0
+  },
+  {
+   "date": "2026-11-17",
+   "count": 0
   }
  ],
  "total": 110,
  "active": 35,
- "current": 2,
+ "current": 0,
  "longest": 2,
  "best_day": {
   "date": "2026-07-24",
